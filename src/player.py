@@ -1,7 +1,13 @@
 class Player:
+    """
+        Klassen representerar spalarens ikon på spelplanen
+    """
     marker = "@"
 
     def __init__(self, x, y):
+        """
+            Placera spelarikonen på spelplanen
+        """
         self.pos_x = x
         self.pos_y = y
 
@@ -14,7 +20,14 @@ class Player:
         self.pos_y += dy
 
     def can_move(self, x, y, grid):
-        return True
-        #TODO: returnera True om det inte står något i vägen
+        """
+            Kontrollerar om rutan spelaren går till inte är en vägg.
+            Return: Om ej vägg
+        """
+        new_pos_x = self.pos_x + x
+        new_pos_y = self.pos_y + y
+
+        # use existing grid.get() to detect walls
+        return grid.get(new_pos_x, new_pos_y) != grid.wall
 
 

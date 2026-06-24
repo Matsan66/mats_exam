@@ -6,11 +6,15 @@ class Item:
         self.value = value
         self.symbol = symbol
 
+    @property
+    def item_name(self):
+        return self.name
+
     def __str__(self):
         return self.symbol
 
 
-pickups = [Item("carrot"), Item("apple"), Item("strawberry"), Item("cherry"), Item("watermelon"), Item("radish"), Item("cucumber"), Item("meatball")]
+pickups = [Item("carrot"), Item("apple", value = 20), Item("strawberry"), Item("cherry"), Item("watermelon", value = 20), Item("radish"), Item("cucumber"), Item("meatball")]
 
 
 def randomize(grid):

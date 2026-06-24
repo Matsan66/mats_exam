@@ -13,6 +13,7 @@ class Grid:
         self.data = [[self.empty for y in range(self.width)] for z in range(
             self.height)]
 
+# ---------------------------------------------------------------
 
     def get(self, x, y):
         """Hämta det som finns på en viss position"""
@@ -29,6 +30,15 @@ class Grid:
         """Ta bort item från position"""
         self.set(x, y, self.empty)
 
+    # ---------------------------------------------------------------
+
+    def print_status(self, game_grid, state):
+        """Visa spelvärlden och antal poäng."""
+        print("--------------------------------------")
+        print(f"You have {state.score} points.")
+        print(game_grid)
+
+
     def __str__(self):
         """Gör så att vi kan skriva ut spelplanen med print(grid)"""
         xs = ""
@@ -42,6 +52,7 @@ class Grid:
             xs += "\n"
         return xs
 
+    # ---------------------------------------------------------------
 
     def make_walls(self):
         """Skapa väggar runt hela spelplanen"""
@@ -53,6 +64,27 @@ class Grid:
             self.set(j, 0, self.wall)
             self.set(j, self.height - 1, self.wall)
 
+
+    def make_obstacle_walls(self):
+        """Skapa extra väggar på spelplanen"""
+
+        # Lodrät vägg 1
+        for y in range(3, 8): # Väggens längd
+            self.set(10, y, self.wall) # Startposition
+
+        # Vågrät vägg 1
+        for x in range(7, 23):
+            self.set(x, 6, self.wall)
+
+        # Lodrät vägg 2
+        for y in range(4, 10):
+            self.set(30, y, self.wall)
+
+        # Vågrät vägg 2
+        for x in range(17, 32):
+            self.set(x, 2, self.wall)
+
+    # ---------------------------------------------------------------
 
     # Används i filen pickups.py
     def get_random_x(self):
@@ -67,4 +99,3 @@ class Grid:
     def is_empty(self, x, y):
         """Returnerar True om det inte finns något på aktuell ruta"""
         return self.get(x, y) == self.empty
-

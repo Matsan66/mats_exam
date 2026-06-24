@@ -1,54 +1,78 @@
-from src.grid import Grid
-from src.player import Player
+from src.game_state import GameState
 from src import pickups
+import msvcrt
 
 
-# TODO: flytta denna till en annan fil
-class GameState:
-    """Samla spelets variabler i en klass."""
-    def __init__(self):
-        self.player = Player(2, 1)
-        self.score = 0
-        self.inventory = []
+class Game():
+    """
+    Game startar och kontrollerar spelet Fruit Loopd
+    """
+    def __init__(self, game_state):
+        self.game_state = game_state
 
-        self.g = Grid()
-        self.g.set_player(self.player)
-        self.g.make_walls()
-        pickups.randomize(self.g)
+    def start(self):
+        """
+        Kontrollerar spelets huvudloop
+        """
+        command = "a"
+        # Loopa tills användaren trycker Q eller X.
+        while not command.casefold() in ["q", "x"]:
+            self.game_state.game_grid.print_status(self.game_state.game_grid, self.game_state)
 
+            print("Använd WASD för att flytta, Q/X för att avsluta. ")
 
-# TODO: flytta denna till en annan fil
-def print_status(game_grid, state):
-    """Visa spelvärlden och antal poäng."""
-    print("--------------------------------------")
-    print(f"You have {state.score} points.")
-    print(game_grid)
+            pressed_key = msvcrt.getch()
+            if pressed_key in (b'\x00', b'\xe0'):  # Ignore special characters
+                msvcrt.getch()
+                continue
+            command = pressed_key.decode().casefold()
 
+            self.act_on_player_input(command)
 
-def start(state):
-    command = "a"
-    # Loopa tills användaren trycker Q eller X.
-    while not command.casefold() in ["q", "x"]:
-        print_status(state.g, state)
+        # Hit kommer vi när while-loopen slutar
+        print("\nTack för att su spelade Fruit Loop!")
 
-        command = input("Use WASD to move, Q/X to quit. ")
-        command = command.casefold()[:1]
+    def act_on_player_input(self, command):
+        """
+        Analyserar spelarens kommandon och exekverar dem
+        """
+        maybe_item = None
 
-        if command == "d" and state.player.can_move(1, 0, state.g):  # move right
-            # TODO: skapa funktioner, så vi inte behöver upprepa så mycket kod för riktningarna "W,A,S"
-            maybe_item = state.g.get(state.player.pos_x + 1, state.player.pos_y)
-            state.player.move(1, 0)
+        directions = {
+            "d": (1, 0),
+            "a": (-1, 0),
+            "w": (0, -1),
+            "s": (0, 1)
+        }
 
-            if isinstance(maybe_item, pickups.Item):
-                # we found something
-                state.score += maybe_item.value
-                print(f"You found a {maybe_item.name}, +{maybe_item.value} points.")
-                #g.set(player.pos_x, player.pos_y, g.empty)
-                state.g.clear(state.player.pos_x, state.player.pos_y)
+        # Om spelaren vill se inventory
+        if command == "i":
+            self.game_state.display_inventory()
+            return
 
+        # Om kommandot inte är en riktning
+        if command not in directions:
+            return
 
-    # Hit kommer vi när while-loopen slutar
-    print("Thank you for playing!")
+        dx, dy = directions[command]
+
+        # Kontrollera att rutan att går till inte är en vägg och om positionen har en item.
+        if self.game_state.player.can_move(dx, dy, self.game_state.game_grid):
+            maybe_item = self.game_state.game_grid.get(
+                self.game_state.player.pos_x + dx,
+                self.game_state.player.pos_y + dy
+            )
+
+            self.game_state.player.move(dx, dy) # Flytta spelarikonen
+            self.game_state.score -= 1 # Golvet är lava - 1poäng för varje steg
+
+        if isinstance(maybe_item, pickups.Item):
+            # we found something
+            self.game_state.score += maybe_item.value # Poäng för hittat item
+            print(f"Du har hittat en {maybe_item.name}, +{maybe_item.value} poäng.")
+            self.game_state.inventory.append(maybe_item) # Lägg till hittat item i Inventory
+            self.game_state.game_grid.clear(self.game_state.player.pos_x, self.game_state.player.pos_y) # Töm rutan
+
 
 
 # __name__ skapas av Python och sätts till "__main__" om man startar game.py
@@ -56,4 +80,5 @@ def start(state):
 # saker från game.py i en annan fil, till exempel vid testning.
 if __name__ == "__main__":
     game_state = GameState()
-    start(game_state)
+    game = Game(game_state)
+    game.start()
