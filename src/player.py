@@ -10,6 +10,11 @@ class Player:
         """
         self.pos_x = x
         self.pos_y = y
+        self.inventory = []
+
+    # Returnerar spelarens inventarielista
+    def get_player_inventory(self):
+        return self.inventory
 
     # Flyttar spelaren. "dx" och "dy" är skillnaden
     def move(self, dx, dy):
@@ -29,5 +34,8 @@ class Player:
 
         # use existing grid.get() to detect walls
         return grid.get(new_pos_x, new_pos_y) != grid.wall
+
+
+
 
 

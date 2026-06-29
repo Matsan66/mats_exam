@@ -35,7 +35,7 @@ class Grid:
     def print_status(self, game_grid, state):
         """Visa spelvärlden och antal poäng."""
         print("--------------------------------------")
-        print(f"You have {state.score} points.")
+        print(f"Du har {state.score} poäng.")
         print(game_grid)
 
 
