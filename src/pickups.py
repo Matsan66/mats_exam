@@ -8,11 +8,16 @@ class Item:
 
     @property
     def item_name(self):
+        """
+            returnerar ett items namn
+        """
         return self.name
 
     def __str__(self):
+        """
+            returnerar objektets symbol
+        """
         return self.symbol
-
 
 pickups = [
     Item("spade", value = 0, symbol = "!"), Item("fälla", value = -10, symbol = "."), Item("morot"),
@@ -22,6 +27,9 @@ pickups = [
 
 
 def randomize(grid):
+    """
+        Placerar items i listan pickups slumpmässigt på spelplanen
+    """
     for item in pickups:
         while True:
             # slumpa en position tills vi hittar en som är ledig
@@ -33,7 +41,7 @@ def randomize(grid):
 
 def add_extra_fruit(grid, item):
     """
-    Lägger till en item på en slumpmässig plats på spelplan
+        Lägger till en item på en slumpmässig plats på spelplan
     """
     while True:
         # slumpa en position tills vi hittar en som är ledig

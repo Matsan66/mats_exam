@@ -3,7 +3,9 @@ from src.player import Player
 from src import pickups
 
 class GameState:
-    """Samla spelets variabler i en klass."""
+    """
+        Samla spelets variabler i en klass.
+    """
     def __init__(self):
         self.player = Player(18, 5)
         self.score = 0

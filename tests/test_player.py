@@ -14,7 +14,7 @@ Då inventarielistan returneras ska varje item utgöra en indexposition
 Då inventarielistan returneras ska den innehålla samma items som lagts i listan
 
 """
-
+# ----------------------------------------------------------------------------------
 
 def test_get_player_inventory():
     """

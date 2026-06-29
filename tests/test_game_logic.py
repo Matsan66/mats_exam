@@ -16,6 +16,8 @@ Då spaden använts på en vägg ska väggens position på spalplanen bli tom
 Då spelaren står på en fälla och använder kommandot "t" ska fällan ersättas med en tom ruta
 """
 
+# ----------------------------------------------------------------------------------
+
 def test_spade_remove_walls():
     """
     Testar att spelaren kan flytta till positionen för en vägg om det finns en

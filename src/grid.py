@@ -1,7 +1,9 @@
 import random
 
 class Grid:
-    """Representerar spelplanen. Du kan ändra standardstorleken och tecknen för olika rutor. """
+    """
+        Representerar spelplanen..
+    """
     width = 36
     height = 12
     empty = "."  # Tecken för en tom ruta
@@ -9,7 +11,9 @@ class Grid:
     exit = "E"
 
     def __init__(self):
-        """Skapa ett objekt av klassen Grid"""
+        """
+            Skapar ett objekt av klassen Grid
+        """
         # Spelplanen lagras i en lista av listor. Vi använder "list comprehension" för att sätta tecknet för "empty" på varje plats på spelplanen.
         self.data = [[self.empty for y in range(self.width)] for z in range(
             self.height)]
@@ -17,31 +21,45 @@ class Grid:
 # ---------------------------------------------------------------
 
     def get(self, x, y):
-        """Hämta det som finns på en viss position"""
+        """
+            Hämta det som finns på en viss position
+        """
         return self.data[y][x]
 
     def set(self, x, y, value):
-        """Ändra vad som finns på en viss position"""
+        """
+            Ändra vad som finns på en viss position
+            """
         self.data[y][x] = value
 
     def set_player(self, player):
+        """
+            Skapar attributet player
+        """
+
         self.player = player
 
     def clear(self, x, y):
-        """Ta bort item från position"""
+        """
+            Ta bort item från position
+        """
         self.set(x, y, self.empty)
 
     # ---------------------------------------------------------------
 
     def print_status(self, game_grid, state):
-        """Visa spelvärlden och antal poäng."""
+        """
+            Visa spelvärlden och antal poäng.
+        """
         print("--------------------------------------")
         print(f"Du har {state.score} poäng.")
         print(game_grid)
 
 
     def __str__(self):
-        """Gör så att vi kan skriva ut spelplanen med print(grid)"""
+        """
+            Gör så att vi kan skriva ut spelplanen med print(grid)
+        """
         xs = ""
         for y in range(len(self.data)):
             row = self.data[y]
@@ -56,7 +74,9 @@ class Grid:
     # ---------------------------------------------------------------
 
     def make_walls(self):
-        """Skapa väggar runt hela spelplanen"""
+        """
+            Skapa väggar runt hela spelplanen
+        """
         for i in range(self.height):
             self.set(0, i, self.wall)
             self.set(self.width - 1, i, self.wall)
@@ -67,7 +87,9 @@ class Grid:
 
 
     def make_obstacle_walls(self):
-        """Skapa extra väggar på spelplanen"""
+        """
+            Skapa extra väggar på spelplanen
+        """
 
         # Lodrät vägg 1
         for y in range(3, 8): # Väggens längd
@@ -87,7 +109,7 @@ class Grid:
 
     def set_exit(self):
         """
-        Skapa utgång på spelplanen
+            Skapa utgång på spelplanen
         """
         while True:
             x = self.get_random_x()
@@ -104,14 +126,20 @@ class Grid:
 
     # Används i filen pickups.py
     def get_random_x(self):
-        """Slumpa en x-position på spelplanen"""
+        """
+            Slumpa en x-position på spelplanen
+        """
         return random.randint(0, self.width-1)
 
     def get_random_y(self):
-        """Slumpa en y-position på spelplanen"""
+        """
+            Slumpa en y-position på spelplanen
+        """
         return random.randint(0, self.height-1)
 
 
     def is_empty(self, x, y):
-        """Returnerar True om det inte finns något på aktuell ruta"""
+        """
+            returnerar True om det inte finns något på aktuell ruta
+        """
         return self.get(x, y) == self.empty

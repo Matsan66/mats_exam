@@ -1,0 +1,56 @@
+https://github.com/Matsan66/mats_exam
+
+Jag har kort kommenterat de uppgifter jag löst och hur jag gått tillväga i README.md.
+
+Jag har implementerat samtliga grundkrav och huvuddelen av "nice to have" och "extra utmaningar". Det
+är tre uppgifter jag inte hinner slutföra då jag reser på semester redan 1 Juli. Jag hoppas att min
+lösning räcker till VG ändå.
+
+Majoriteten av min kod är implementerad i klassen Game som utgör kontroll av spelet. Där analyseras
+användarens knapptryckningar och spelarens rörelser på spelplanen. Där sker också kontroll och
+interaktion med de föremål som finns på spelplanen. Notera att jag använder "msvcrt.getch()" för att
+slippa trycka enter vid varje kommando.
+
+Klassen Player
+Jag har valt att låta klassen äga spelarens inventarielista och har lagt till en metod get_player_inventory()
+för att läsa listan.
+Jag har utvecklat metoden can_move() så att den returnerar om rutan spelaren går till är en vägg eller inte.
+
+Klassen Grid
+I klassen har jag lagt till en metod make_obstacle_walls() som lägger till extra väggar på spelplanen.
+Jag har också lagt till en symbol "E" för exit och designat en metod set_exit() som slumpmässigt placerar
+exit på spelplanen.
+
+Klassen GameState
+Jag flyttade klassen till en egen fil game_state.py
+
+Klassen Item
+Jag har lagt till en getter (@property) för kunna hämta ett items name attribut.
+Jag har lagt till en hel del items i listan pickups, t.ex. spade, fälla, nyckel och kista.
+Jag har implementerat en ny metod add_extra_fruit() för att lägga till extra frukter på
+spelplanen inom ramen för uppgiften "bördig jord".
+
+Filen test_player.py
+Innehåller funktionella och icke funktionella krav för metoden get_player_inventory(), Filen innehåller även
+de tester som låg till grund för design av metoden enligt TDD.
+
+Filen test_game_logic
+Innehåller tester för delar av logiken i Game. Filen innehåller funktionella och icke funktionella krav som
+legat till grund för deign av testerna.
+Det jag valt att testa är att en spelare med spade kan ta bort en vägg och gå till väggens tidigare plats.
+Jag har även valt att testa desarmering av en fälla då spelaren går till en fälla och trycker "t".
+
+Teckenförklaring:
+@ = Spelaren
+. = Tom ruta
+■ = Vägg
+? = Frukt eller grönsak
+o = Frukt från bördig jord
+! = Spade
+⌂ = Nyckel
+$ = Kista
+E = Exit
+
+Notera: Fällan har samma symbol som en tom ruta, den ska ju vara dold. För att testa att den fungerar
+och att det går att desarmera den kan man ändra symbol på den i listan piclups i klassen Item.
+

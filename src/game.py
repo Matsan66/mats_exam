@@ -3,10 +3,9 @@ from src.game_state import GameState
 from src import pickups
 import msvcrt
 
-
 class Game():
     """
-    Game startar och kontrollerar spelet Fruit Loopd
+        Game startar och kontrollerar spelet Fruit Loopd
     """
     def __init__(self, game_state):
         self.game_state = game_state
@@ -18,14 +17,14 @@ class Game():
 
     def start(self):
         """
-        Kontrollerar spelets huvudloop
+            Kontrollerar spelets huvudloop
         """
         command = "a"
-        # Loopa tills användaren trycker Q eller X eller game_over sätts till True.
+        # Loopa tills användaren trycker Q eller X eller tills game_over sätts till True.
         while not self.game_over and command.casefold() not in ["q", "x"]:
             self.game_state.game_grid.print_status(self.game_state.game_grid, self.game_state)
 
-            print("Använd WASD för att flytta, Q/X för att avsluta. ")
+            print("Använd WASD för att flytta, Q/X för att avsluta.\n")
 
             pressed_key = msvcrt.getch()
             if pressed_key in (b'\x00', b'\xe0'):  # Ignore special characters
@@ -38,10 +37,12 @@ class Game():
         # Hit kommer vi när while-loopen slutar
         print("\nTack för att du spelade Fruit Loop!")
 
+    # --------------------------------------------------------------------------
+
     def disarm_trap(self):
         """
-        Tar bort en fälla från spelplan när spelaren trycker "t" och aktuell
-        ruta innehåller en fälla.
+            Tar bort en fälla från spelplan när spelaren trycker "t" och aktuell
+            ruta innehåller en fälla.
         """
         x = self.game_state.player.pos_x
         y = self.game_state.player.pos_y
@@ -53,6 +54,7 @@ class Game():
             return True
         return False
 
+# --------------------------------------------------------------------------
 
     def act_on_player_input(self, command):
         """
@@ -67,6 +69,8 @@ class Game():
             "s": (0, 1)
         }
 
+    # ---------------------------------------------
+
         # Om spelaren vill se inventarielistan
         if command == "i":
             player_inventory = self.game_state.player.get_player_inventory()
@@ -79,6 +83,8 @@ class Game():
             print()
             return
 
+    # ---------------------------------------------
+
         # Om spelaren försöker desarmera en fälla
         if command == "t":
             disarm_result = self.disarm_trap()
@@ -89,11 +95,15 @@ class Game():
                 print("Ingen fälla här!")
             return
 
+    # ---------------------------------------------
+
         # Om kommandot inte är en riktning
         if command not in directions:
             return
 
         dx, dy = directions[command]
+
+    # ---------------------------------------------
 
         # Om inte en vägg eller om spelaren har en spade. Kontrollera om det finns item på rutan.
         if self.game_state.player.can_move(dx, dy, self.game_state.game_grid) or any(item.name == "spade" for item in self.game_state.player.inventory):
@@ -108,6 +118,7 @@ class Game():
 
             # Om rutan att gå till var en vägg men spelaren har spade
             if not self.game_state.player.can_move(dx, dy, self.game_state.game_grid):
+                print("Du har tagit bort väggen med spaden.")
 
                 # Ta bort spaden ur inventory
                 for item in self.game_state.player.inventory:
@@ -211,9 +222,6 @@ class Game():
                 self.game_state.game_grid.clear(self.game_state.player.pos_x, self.game_state.player.pos_y) # Töm rutan
 
 
-# __name__ skapas av Python och sätts till "__main__" om man startar game.py
-# direkt. Detta är för att undvika att start-funktionen körs om man importerar
-# saker från game.py i en annan fil, till exempel vid testning.
 if __name__ == "__main__":
     game_state = GameState()
     game = Game(game_state)

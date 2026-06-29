@@ -2,7 +2,7 @@
 
 Individuell examinationsuppgift i kursen Programmering med Python.
 
-## Uppgift
+## Uppgift  
 Din uppgift är att bygga vidare på spelet "Fruit loop". Spelet kan 
 spelas direkt i terminalen, och går ut på att samla frukter.
 ---
@@ -33,7 +33,8 @@ Då spelaren skriver "i" läser act_on_player_input(), i klassen Game, input och
 samt skriver ut den.
 
 G. The floor is lava - för varje steg man går ska man tappa 1 poäng.   
---> Då spelaren förflyttas i klassen Game minskas spelarens poäng med 1.
+--> Då spelaren förflyttas i klassen Game minskas spelarens poäng med 1. Om spelet
+är i Grace period minskas inte poängen förrän perioden är över.
 
 H. Använd for-loopar för att skapa flera, sammanhängande väggar på kartan.
 Se till att det inte skapas några rum som man inte kan komma in i. Gör detta i filen grid.py.  
@@ -68,7 +69,8 @@ skatt som är värd 100 poäng. (Nyckeln är förbrukad.).
 hanterar jag tre scenarios:  
 1. Spelaren har ingen nyckel då han går till kistan
 2. Spelaren har nyckel då han går till kistan
-3. Spelaren hittar item som inte är kista 
+3. Spelaren hittar item som inte är kista  
+
 Om spelaren har nyckel då han går till kistan ökas poängen med 100 poäng och meddelandet
 "Du låste upp kistan med din nyckel! +100 poäng" skrivs ut. Har han inte nyckeln skrivs 
 meddelandet "Kistan är låst! Du måste hitta en nyckel först.".
@@ -85,7 +87,7 @@ M. Exit - slumpa ett "E" på kartan. När man har plockat upp alla ursprungliga
 saker, kan man gå till exit för att vinna spelet. Men innan man tagit upp alla 
 har inte Exit någon effekt.  
 --> Jag skapar utgången i klassen Grid i metoden set_exit(). Metoden använder 
-klassens befintliga metoder för att slumpa x oxh y och kontrollerar sedan om 
+klassens befintliga metoder för att slumpa x och y och kontrollerar sedan om 
 rutan är tom. Om rutan är tom placeras "E" ut på spelplanen.  
 I klassen Game har jag skapat en instanvariabel som har startvärde lika med antal
 utspringliga frukter. Varje gång en av dessa plockas upp minskar jag räknaren med 1.
