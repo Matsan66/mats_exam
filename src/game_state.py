@@ -12,4 +12,5 @@ class GameState:
         self.game_grid.set_player(self.player)
         self.game_grid.make_walls()
         self.game_grid.make_obstacle_walls()
+        self.game_grid.set_exit()
         pickups.randomize(self.game_grid)

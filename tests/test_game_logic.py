@@ -64,6 +64,27 @@ def test_disarm_trap():
     # Skapa en ny fälla
     new_trap = Item("trap", value = -10, symbol = ".")
 
+    # Placera fällan till höger om spelaren
+    player_start_position_x = game.game_state.player.pos_x
+    player_start_position_y = game.game_state.player.pos_y
+    game.game_state.game_grid.set(player_start_position_x + 1,
+                                  player_start_position_y,
+                                  new_trap)
+
+    # Flytta spelaren ett steg till höger
+    game.act_on_player_input("d")
+
+    # Desarmera fällan
+    game.act_on_player_input("t")
+
+    # Kontrollera att fällan ersatts med en "tom" ruta
+    assert game.game_state.game_grid.get(player_start_position_x + 1,
+                                         player_start_position_y) == game.game_state.game_grid.empty
+
+
+
+
+
 
 
 

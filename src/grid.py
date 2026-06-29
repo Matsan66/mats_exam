@@ -6,6 +6,7 @@ class Grid:
     height = 12
     empty = "."  # Tecken för en tom ruta
     wall = "■"   # Tecken för en ogenomtränglig vägg
+    exit = "E"
 
     def __init__(self):
         """Skapa ett objekt av klassen Grid"""
@@ -83,6 +84,21 @@ class Grid:
         # Vågrät vägg 2
         for x in range(17, 32):
             self.set(x, 2, self.wall)
+
+    def set_exit(self):
+        """
+        Skapa utgång på spelplanen
+        """
+        while True:
+            x = self.get_random_x()
+            y = self.get_random_y()
+            if (
+                0 < x < self.width - 1 and
+                0 < y < self.height - 1 and
+                self.is_empty(x, y)
+            ):
+                self.set(x, y, self.exit)
+                break
 
     # ---------------------------------------------------------------
 

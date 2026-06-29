@@ -1,6 +1,6 @@
+from src.pickups import Item
 from src.game_state import GameState
 from src import pickups
-from src.player  import Player
 import msvcrt
 
 
@@ -10,15 +10,19 @@ class Game():
     """
     def __init__(self, game_state):
         self.game_state = game_state
+        self.game_over = False
         self.grace_period_counter = 0
+        self.fertile_soil_counter = 0
+        self.original_fruits = 8
+        self.exit_open = False
 
     def start(self):
         """
         Kontrollerar spelets huvudloop
         """
         command = "a"
-        # Loopa tills användaren trycker Q eller X.
-        while not command.casefold() in ["q", "x"]:
+        # Loopa tills användaren trycker Q eller X eller game_over sätts till True.
+        while not self.game_over and command.casefold() not in ["q", "x"]:
             self.game_state.game_grid.print_status(self.game_state.game_grid, self.game_state)
 
             print("Använd WASD för att flytta, Q/X för att avsluta. ")
@@ -35,6 +39,10 @@ class Game():
         print("\nTack för att du spelade Fruit Loop!")
 
     def disarm_trap(self):
+        """
+        Tar bort en fälla från spelplan när spelaren trycker "t" och aktuell
+        ruta innehåller en fälla.
+        """
         x = self.game_state.player.pos_x
         y = self.game_state.player.pos_y
 
@@ -94,7 +102,11 @@ class Game():
                 self.game_state.player.pos_y + dy
             )
 
-            # Om rutan att gå till var en vägg
+            # -----------------------------------------------------
+            # SPELAREN HAR EN SPADE OCH ANVÄNDER DEN PÅ EN VÄGG
+            # -----------------------------------------------------
+
+            # Om rutan att gå till var en vägg men spelaren har spade
             if not self.game_state.player.can_move(dx, dy, self.game_state.game_grid):
 
                 # Ta bort spaden ur inventory
@@ -106,27 +118,95 @@ class Game():
                 # Töm rutan spelaren gått till (väggen)
                 self.game_state.game_grid.set(self.game_state.player.pos_x + dx, self.game_state.player.pos_y + dy, self.game_state.game_grid.empty)
 
+            # -----------------------------------------------------
+            # FLYTTA SPELARIKONEN, HANTERA BÖRDIG JORD och EXIT
+            # -----------------------------------------------------
+            self.game_state.player.move(dx, dy)
 
-            self.game_state.player.move(dx, dy) # Flytta spelarikonen
+            self.fertile_soil_counter += 1
+
+            if self.fertile_soil_counter == 25:
+                fruits =  ["banan", "mango", "persika", "nektarin", "apelsin", "clementin", "kiwi", "citron", "plommon", "päron"]
+                if len(fruits) > 0:
+                    pickups.add_extra_fruit(game_state.game_grid, Item(fruits[0], value = 20, symbol = "o"))
+                    self.fertile_soil_counter = 0
+                    fruits.remove(fruits[0])
+                else:
+                    print("Inga fler frukter att lägga till")
+
+            x = self.game_state.player.pos_x
+            y = self.game_state.player.pos_y
+            grid_spot_status = self.game_state.game_grid.get(x, y)
+
+            if grid_spot_status == "E" and not self.exit_open:
+                print("Du står på utgången, men har inte tagit alla ursprungliga frukter!")
+            elif grid_spot_status == "E" and self.exit_open:
+                print("Du har lämnat spelet.")
+                self.game_over = True
+
+
+            # -----------------------------------------------------
+            # GOLVET ÄR LAVA OCH GRACE PERIOD KONTROLL
+            # -----------------------------------------------------
 
             if self.grace_period_counter == 0:
                 self.game_state.score -= 1 # Golvet är lava - 1 poäng för varje steg
             else:
                 self.grace_period_counter -= 1
+                print(f"Grace period = {self.grace_period_counter}")
 
         if isinstance(maybe_item, pickups.Item):
-            # we found something
-            self.game_state.score += maybe_item.value # Poäng för hittat item
-            self.grace_period_counter = 5
+            # En inventraie item är hittad och grace period startar
+            if maybe_item.name != "kista" and maybe_item.name != "fälla":
+                print("Grace period är aktiverad")
+                self.grace_period_counter = 5
 
+            # -----------------------------------------------------
+            # HANTERA HITTAD ITEM SOM INTE ÄR EN KISTA
+            # -----------------------------------------------------
+            if maybe_item.name != "kista":
+                self.game_state.score += maybe_item.value # Poäng för hittat item utom kista
 
-            if maybe_item.value > 0:
-                print(f"Du har hittat en {maybe_item.name}, +{maybe_item.value} poäng.") # Positiv poäng
-            else:
-                print(f"Du har hittat en {maybe_item.name}, {maybe_item.value} poäng.") # Negativ poäng
+                if maybe_item.value > 0:
+                    print(f"Du har hittat en {maybe_item.name}, +{maybe_item.value} poäng.")  # Positiv poäng
+                else:
+                    print(f"Du har hittat en {maybe_item.name}, {maybe_item.value} poäng.")  # Negativ poäng
 
-            # Cleara rutan från item och lägg item i Inventory om inte item är en Fälla
-            if maybe_item.name != "fälla":
+                # -----------------------------------------------------
+                # HANTERA ÖPPPNING AV EXIT DÅ ALLA ORIGINAL FRUKTER HITTATS
+                # -----------------------------------------------------
+
+                if maybe_item.symbol == "?":
+                    self.original_fruits -= 1
+                    if self.original_fruits == 0:
+                        self.exit_open = True
+
+            # -----------------------------------------------------
+            # HANTERA HITTAD ITEM SOM ÄR EN KISTA OCH SPELAREN HAR EN NYCKEL
+            # ----------------------------------------------------
+            elif maybe_item.name == "kista" and any(item.name == "nyckel" for item in self.game_state.player.inventory):
+                self.game_state.score += maybe_item.value  # Poäng för kista med nyckel
+                print(f"Du låste upp kistan med din nyckel! +{maybe_item.value} poäng.")
+
+                # Ta bort nyckeln från inventarielistan då den är förbrukad
+                for item in self.game_state.player.inventory:
+                    if item.name == "nyckel":
+                        self.game_state.player.inventory.remove(item)
+
+                # Ta bort kistan från spelplanen då den är öppnad
+                self.game_state.game_grid.clear(self.game_state.player.pos_x, self.game_state.player.pos_y)
+
+            # -----------------------------------------------------
+            # HANTERA HITTAD ITEM SOM ÄR EN KISTA DÅ SPELAREN INTE HAR EN NYCKEL
+            # ----------------------------------------------------
+            elif maybe_item.name == "kista":
+                print("Kistan är låst! Du måste hitta en nyckel först.")
+
+            # -----------------------------------------------------
+            # HANTERA HITTAD ITEM SOM INTE INVOLVERAR KISTA ELLER FÄLLA
+            # ----------------------------------------------------
+            # Cleara rutan från item och lägg item i Inventory om inte item är en fälla eller kista
+            if maybe_item.name != "fälla" and maybe_item.name != "kista":
                 self.game_state.player.inventory.append(maybe_item)  # Lägg till hittat item i Inventory
                 self.game_state.game_grid.clear(self.game_state.player.pos_x, self.game_state.player.pos_y) # Töm rutan
 
